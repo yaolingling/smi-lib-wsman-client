@@ -25,36 +25,43 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-//import com.sun.ws.management.addressing.Addressing;
+
 
 /**
  * Utility class to aid with searching for nodes in a given DOM document. Methods can return either text values or nodes depending on the type of search requested.
  *
- *
- * @author Matthew_G_Stemen
  */
 public class XMLTool {
     /**
      * Inner class to store a Node list, exposed as an Interface
      */
     public class XMLToolNodeList implements NodeList {
-        private List<Node> nodeList = new ArrayList<Node>();
+        private List<Node> nodeList = new ArrayList<>();
 
 
+        /* (non-Javadoc)
+         * @see org.w3c.dom.NodeList#item(int)
+         */
         @Override
         public Node item(int index) {
-            // TODO Auto-generated method stub
             return nodeList.get(index);
         }
 
 
+        /* (non-Javadoc)
+         * @see org.w3c.dom.NodeList#getLength()
+         */
         @Override
         public int getLength() {
-            // TODO Auto-generated method stub
             return nodeList.size();
         }
 
 
+        /**
+         * Adds the.
+         *
+         * @param nodeToAdd the node to add
+         */
         private void add(Node nodeToAdd) {
             nodeList.add(nodeToAdd);
         }
@@ -62,7 +69,7 @@ public class XMLTool {
     }
 
     /**
-     * The search scope is used for criteria in matching a node name
+     * The search scope is used for criteria in matching a node name.
      */
     public enum NameScope {
         /**
@@ -85,7 +92,6 @@ public class XMLTool {
 
     private boolean debugFlag = false;
     private boolean stopWalk = false;
-    // private List<Node> nodeList = new ArrayList<Node>();
     private XMLToolNodeList nodeList = new XMLToolNodeList();
     private Node targetNode = null;
     private String targetValue = null;
@@ -94,12 +100,13 @@ public class XMLTool {
 
     private NameScope searchScope = NameScope.Name;
 
-    LinkedHashMap<String, String> namespaces = new LinkedHashMap<String, String>();
+    LinkedHashMap<String, String> namespaces = new LinkedHashMap<>();
 
 
     /**
+     * Instantiates a new XML tool.
      *
-     * @param docToLoad
+     * @param docToLoad the doc to load
      */
     public XMLTool(Document docToLoad) {
         this.sourceDocument = docToLoad;
@@ -107,8 +114,9 @@ public class XMLTool {
 
 
     /**
+     * Sets the search scope.
      *
-     * @param newScope
+     * @param newScope the new search scope
      */
     public void setSearchScope(NameScope newScope) {
         this.searchScope = newScope;
@@ -116,7 +124,7 @@ public class XMLTool {
 
 
     /**
-     * Toggles debug mode
+     * Toggles debug mode.
      */
     public void setDebug() {
         debugFlag = !debugFlag;
@@ -124,8 +132,9 @@ public class XMLTool {
 
 
     /**
+     * Load doc.
      *
-     * @param docToLoad
+     * @param docToLoad the doc to load
      */
     public void loadDoc(Document docToLoad) {
         this.sourceDocument = docToLoad;
@@ -133,6 +142,7 @@ public class XMLTool {
 
 
     /**
+     * Gets the target node.
      *
      * @param name - Node name to search for, name can be local if the scope is set
      * @return First Node that matched search
@@ -147,6 +157,7 @@ public class XMLTool {
 
 
     /**
+     * Gets the target nodes.
      *
      * @param name - Node name to search for, name can be local if the scope is set
      * @return NodeList of all Nodes that matched search
@@ -161,10 +172,11 @@ public class XMLTool {
 
 
     /**
+     * Gets the target node.
      *
      * @param name - Node name to search for, name can be local if the scope is set
      * @param value - Node value to search for that is part of a found Node
-     * @return
+     * @return the target node
      */
     public Node getTargetNode(String name, String value) {
         targetName = name;
@@ -177,9 +189,10 @@ public class XMLTool {
 
 
     /**
+     * Gets the target value.
      *
-     * @param value
-     * @return
+     * @param value the value
+     * @return the target value
      */
     public String getTargetValue(String value) {
         targetValue = null;
@@ -191,6 +204,7 @@ public class XMLTool {
 
 
     /**
+     * Gets the target node.
      *
      * @return Node - Last Node found
      */
@@ -201,6 +215,7 @@ public class XMLTool {
 
 
     /**
+     * Gets the value.
      *
      * @return String - Last Value found
      */
@@ -211,8 +226,9 @@ public class XMLTool {
 
 
     /**
+     * Gets the value from child.
      *
-     * @param parent
+     * @param parent the parent
      * @return value - The value a child node such that <node> value </node>, common in CIM
      */
     public static String getValueFromChild(Node parent) {
@@ -220,13 +236,22 @@ public class XMLTool {
     }
 
 
+    /**
+     * Put.
+     *
+     * @param prefix the prefix
+     * @param uri the uri
+     */
     private void put(String prefix, String uri) {
         this.namespaces.put(prefix, uri);
     }
 
 
-    /*
-     * Recursive walk that will set a targetNode or group of Nodes based on search criteria
+    /**
+     * Walk. Recursive walk that will set a targetNode or group of Nodes based on search criteria
+     *
+     * @param node the node
+     * @param walkType the walk type
      */
     private void walk(Node node, WalkType walkType) {
         int type = node.getNodeType();
@@ -235,7 +260,6 @@ public class XMLTool {
         String nodeValue = node.getNodeValue();
         String nodeName = node.getNodeName();
         String nodeLocalName = node.getLocalName();
-        NamedNodeMap nnm = node.getAttributes();
         this.targetNode = node;
 
         String searchName = nodeName;
@@ -338,10 +362,8 @@ public class XMLTool {
                     targetNode = parentNode;
                     stopWalk = true;
                 }
-            } else if (nodeName.equals(targetName)) {
-                if (nodeValue.equals(targetValue)) {
-                    stopWalk = true;
-                }
+            } else if (nodeName.equals(targetName) && (nodeValue != null) && nodeValue.equals(targetValue)) {
+                stopWalk = true;
             }
             break;
         } // end of switch
@@ -355,6 +377,16 @@ public class XMLTool {
     }// end of walk`
 
 
+    /**
+     * Prints the doc to string.
+     *
+     * @param document the document
+     * @return the string
+     * @throws ParserConfigurationException the parser configuration exception
+     * @throws TransformerException the transformer exception
+     * @throws SAXException the SAX exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static String printDocToString(Document document) throws ParserConfigurationException, TransformerException, SAXException, IOException {
 
         DOMSource domSource = new DOMSource(document);
@@ -368,6 +400,12 @@ public class XMLTool {
     }
 
 
+    /**
+     * Prints the doc to formatted string.
+     *
+     * @param doc the doc
+     * @return the string
+     */
     public static String printDocToFormattedString(Document doc) {
         String outString = "";
         /*
@@ -380,6 +418,11 @@ public class XMLTool {
     }
 
 
+    /**
+     * Prints the to sys out.
+     *
+     * @param doc the doc
+     */
     public static void printToSysOut(Document doc) {
         Writer writer = new OutputStreamWriter(System.out);
         /*
@@ -389,6 +432,13 @@ public class XMLTool {
     }
 
 
+    /**
+     * Gets the text value from node.
+     *
+     * @param parent the parent
+     * @param valueToGet the value to get
+     * @return the text value from node
+     */
     public String getTextValueFromNode(Node parent, String valueToGet) {
         targetName = valueToGet;
         stopWalk = false;
@@ -400,6 +450,12 @@ public class XMLTool {
     }
 
 
+    /**
+     * Clone document.
+     *
+     * @param docToClone the doc to clone
+     * @return the document
+     */
     public static Document cloneDocument(Document docToClone) {
         TransformerFactory tfactory = TransformerFactory.newInstance();
         DOMSource source = new DOMSource(docToClone);

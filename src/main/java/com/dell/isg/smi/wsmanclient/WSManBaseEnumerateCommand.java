@@ -21,22 +21,19 @@ import com.dell.isg.smi.wsmanclient.util.WSManUtils;
 /**
  * The {@code WSManBaseEnumerateCommand} class provides an abstract base class for implementers of WS-Management Enumerate commands to extend. It provides default implementations
  * for most of the {@link IWSManClient} interface. Subclasses must override at least {@code getCommandEnum} and {@code parse}.
- * <p/>
- * Example usage is shown in the following code:
- * <p/>
  * 
- * <pre>
- * public class EnumerateSystemViewsCmd extends WSManBaseEnumerateCommand<List<SystemView>> {
+ * Example usage is shown in the following code:
+ * 
+ * public class EnumerateSystemViewsCmd extends WSManBaseEnumerateCommand List SystemView {
  *     public WSManConstants.WSManClassEnum getCommandEnum() {
  *         return WSManConstants.WSManClassEnum.DCIM_SystemView;
  *     }
  *
  * 
- *     public List<SystemView> parse(String xml) throws WSManException {
+ *     public List SystemView  parse(String xml) throws WSManException {
  *         return WSManUtils.parseEnumerationResponse(xml, SystemView.class, getCommandEnum());
  *     }
  * }
- * </pre>
  *
  * @param <T> The type of POJO that {@code parse} returns.
  */
@@ -46,6 +43,9 @@ public abstract class WSManBaseEnumerateCommand<T> implements IWSManCommand<T> {
     public static final String WSMAN_WQL_NAMESPACE = "http://schemas.microsoft.com/wbem/wsman/1/WQL";
 
 
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.IWSManCommand#getAction()
+     */
     @Override
     public String getAction() {
         return ENUMERATION_NAMESPACE + "/Enumerate";
@@ -55,24 +55,36 @@ public abstract class WSManBaseEnumerateCommand<T> implements IWSManCommand<T> {
     public abstract WSManConstants.WSManClassEnum getCommandEnum();
 
 
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.IWSManCommand#getResourceURI()
+     */
     @Override
     public String getResourceURI() {
         return WSManUtils.buildResourceURI(getCommandEnum());
     }
 
 
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.IWSManCommand#getSelectors()
+     */
     @Override
     public List<Pair<String, String>> getSelectors() {
         return null;
     }
 
 
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.IWSManCommand#getFilterWQL()
+     */
     @Override
     public String getFilterWQL() {
         return null;
     }
 
 
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.IWSManCommand#getTimeout()
+     */
     @Override
     public String getTimeout() {
         return "PT60.001S";
@@ -102,6 +114,9 @@ public abstract class WSManBaseEnumerateCommand<T> implements IWSManCommand<T> {
     }
 
 
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.IWSManCommand#getBody()
+     */
     @Override
     public Body getBody() {
         org.w3._2003._05.soap_envelope.ObjectFactory env = new org.w3._2003._05.soap_envelope.ObjectFactory();

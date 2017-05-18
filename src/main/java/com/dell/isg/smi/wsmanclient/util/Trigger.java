@@ -7,21 +7,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * The Class Trigger.
  *
- * @author Dan_Phelps<br>
- * <br>
- * <dt>Usage would be as follows:<br>
- *
- * <i>Trigger t = new Trigger(INTERVAL, DURATION);<br>
- * <br>
- * try{<br>
- * while( t.block() ) {<br>
- * work to be done on interval<br>
- * }<br>
- * } finally {<br>
- * t.cancel()<br>
- * }<br>
- *
+ * @author Dan_Phelps
+ *  
+ *  Usage would be as follows: 
+ * 
+ *  Trigger t = new Trigger(INTERVAL, DURATION); 
+ *  
+ *  try{ 
+ *      while( t.block() ) { 
+ *         work to be done on interval 
+ *      } 
+ *   } finally { 
+ *      t.cancel() 
+ *   } 
  */
 public class Trigger implements Runnable {
 
@@ -40,8 +40,8 @@ public class Trigger implements Runnable {
 
 
     /**
-     * Creates a trigger object that can provide timer like notifications based on interval and duration
-     * 
+     * Creates a trigger object that can provide timer like notifications based on interval and duration.
+     *
      * @param interval - how often to notify
      * @param duration - how long until trigger should expire
      */
@@ -52,6 +52,9 @@ public class Trigger implements Runnable {
     }
 
 
+    /* (non-Javadoc)
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         this.startTime = System.currentTimeMillis();
@@ -133,6 +136,11 @@ public class Trigger implements Runnable {
     }
 
 
+    /**
+     * Checks if is expired.
+     *
+     * @return true, if is expired
+     */
     public boolean isExpired() {
         return this.expired;
     }
@@ -184,10 +192,10 @@ public class Trigger implements Runnable {
 
 
     /**
-     * Reset trigger with new values
-     * 
-     * @param interval
-     * @param duration
+     * Reset trigger with new values.
+     *
+     * @param interval the interval
+     * @param duration the duration
      */
     public void reset(long interval, long duration) {
         this.reset();
@@ -200,6 +208,9 @@ public class Trigger implements Runnable {
     }
 
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#finalize()
+     */
     protected void finalize() {
         this.cancelled = true;
     }

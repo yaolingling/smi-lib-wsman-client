@@ -18,7 +18,7 @@ import com.dell.isg.smi.wsmanclient.util.WSManUtils;
 /**
  * The {@code WSManBaseInvokeCommand} class provides an abstract base class for implementers of WS-Management Invoke commands to extend. It provides default implementations for
  * most of the {@link IWSManClient} interface.
- * <p/>
+ * 
  * The constructor must be supplied with the {@code WSManClassEnum} and {@code Invoke} method name. Additionally, subclasses should override {@code getUserParams} if they take
  * input parameters. The `List<Pair<String, String>>` return value will be used by the base class
  *

@@ -12,6 +12,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+/**
+ * The Class DomUtils.
+ */
 public final class DomUtils {
     private DomUtils() {
     }
@@ -22,6 +25,12 @@ public final class DomUtils {
     public static final StringConverter<Integer> INTEGER_CONVERTER = new IntegerConverter();
 
 
+    /**
+     * Gets the local name.
+     *
+     * @param node the node
+     * @return the local name
+     */
     public static String getLocalName(Node node) {
         if (node == null || !(node instanceof Element)) {
             return null;
@@ -51,6 +60,7 @@ public final class DomUtils {
      * Helper function for processing list values on a DOM tree. Given a list, calls the converter with the the node's text content, adds the resulting value to the list and
      * returns that list if the node is not nil. If the node is nil (which indicates that the list itself is null), returns null.
      *
+     * @param <T> the generic type
      * @param node the node
      * @param list the list
      * @param converter converts the node's text content prior to adding it to the list
@@ -73,18 +83,44 @@ public final class DomUtils {
         return list;
     }
 
+    /**
+     * The Interface StringConverter.
+     *
+     * @param <T> the generic type
+     */
     public interface StringConverter<T> {
+        
+        /**
+         * Convert.
+         *
+         * @param s the s
+         * @return the t
+         */
         T convert(String s);
     }
 
+    /**
+     * The Class NoopConverter.
+     */
     public static class NoopConverter implements StringConverter<String> {
+        
+        /* (non-Javadoc)
+         * @see com.dell.isg.smi.wsmanclient.util.DomUtils.StringConverter#convert(java.lang.String)
+         */
         @Override
         public String convert(String s) {
             return s;
         }
     }
 
+    /**
+     * The Class IntegerConverter.
+     */
     public static class IntegerConverter implements StringConverter<Integer> {
+        
+        /* (non-Javadoc)
+         * @see com.dell.isg.smi.wsmanclient.util.DomUtils.StringConverter#convert(java.lang.String)
+         */
         @Override
         public Integer convert(String s) {
             return (s == null) ? null : Integer.valueOf(s);
