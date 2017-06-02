@@ -11,17 +11,28 @@ import org.apache.xerces.util.XMLChar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The Class XMLFixingReader.
+ */
 public class XMLFixingReader extends Reader {
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLFixingReader.class);
 
     private final Reader target;
 
 
+    /**
+     * Instantiates a new XML fixing reader.
+     *
+     * @param target the target
+     */
     public XMLFixingReader(Reader target) {
         this.target = target;
     }
 
 
+    /* (non-Javadoc)
+     * @see java.io.Reader#read(char[], int, int)
+     */
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
         int ret = target.read(cbuf, off, len);
@@ -38,6 +49,9 @@ public class XMLFixingReader extends Reader {
     }
 
 
+    /* (non-Javadoc)
+     * @see java.io.Reader#close()
+     */
     @Override
     public void close() throws IOException {
         target.close();

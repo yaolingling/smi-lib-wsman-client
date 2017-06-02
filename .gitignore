@@ -10,3 +10,4 @@
 .gradle/2.2.1/taskArtifacts/taskArtifacts.bin
 .classpath
 .gradle/
+.settings/org.eclipse.buildship.core.prefs

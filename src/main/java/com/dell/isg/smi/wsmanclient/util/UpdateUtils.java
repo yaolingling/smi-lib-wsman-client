@@ -3,7 +3,6 @@
  */
 package com.dell.isg.smi.wsmanclient.util;
 
-//import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -15,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import com.dell.isg.smi.wsmanclient.WSManException;
 import com.dell.isg.smi.wsmanclient.model.InvokeCmdResponse;
 
+/**
+ * The Class UpdateUtils.
+ */
 public final class UpdateUtils {
     private UpdateUtils() {
     }
@@ -24,6 +26,13 @@ public final class UpdateUtils {
     protected static final String ERROR_MESSAGE_ID = "-1";
 
 
+    /**
+     * Gets the selectors.
+     *
+     * @param xmlSource the xml source
+     * @return the selectors
+     * @throws WSManException the WS man exception
+     */
     // split into method to eliminate the Cyclomatic complexity of getUpdateJobID
     private static NodeList getSelectors(String xmlSource) throws WSManException {
         if (null == xmlSource || StringUtils.isEmpty(xmlSource))
@@ -35,6 +44,13 @@ public final class UpdateUtils {
     }
 
 
+    /**
+     * Gets the update job ID.
+     *
+     * @param xmlSource the xml source
+     * @return the update job ID
+     * @throws WSManException the WS man exception
+     */
     public static String getUpdateJobID(String xmlSource) throws WSManException {
 
         NodeList selectors = getSelectors(xmlSource);
@@ -64,6 +80,14 @@ public final class UpdateUtils {
     }
 
 
+    /**
+     * Gets the node value from XML.
+     *
+     * @param xmlSource the xml source
+     * @param nodeName the node name
+     * @param uri the uri
+     * @return the node value from XML
+     */
     private static String getNodeValueFromXML(String xmlSource, String nodeName, String uri) {
         if (null == xmlSource || StringUtils.isEmpty(xmlSource))
             return null;
@@ -82,18 +106,38 @@ public final class UpdateUtils {
     }
 
 
+    /**
+     * Gets the message ID.
+     *
+     * @param xmlSource the xml source
+     * @param uri the uri
+     * @return the message ID
+     */
     public static String getMessageID(String xmlSource, String uri) {
         String message = getNodeValueFromXML(xmlSource, "MessageID", uri);
         return message;
     }
 
 
+    /**
+     * Gets the message.
+     *
+     * @param xmlSource the xml source
+     * @param uri the uri
+     * @return the message
+     */
     public static String getMessage(String xmlSource, String uri) {
         String message = getNodeValueFromXML(xmlSource, "Message", uri);
         return message;
     }
 
 
+    /**
+     * Gets the request return value.
+     *
+     * @param xml the xml
+     * @return the request return value
+     */
     public static int getRequestReturnValue(String xml) {
         Document document;
         try {
@@ -116,6 +160,13 @@ public final class UpdateUtils {
     }
 
 
+    /**
+     * Gets the as invoke cmd response.
+     *
+     * @param xml the xml
+     * @param uri the uri
+     * @return the as invoke cmd response
+     */
     public static InvokeCmdResponse getAsInvokeCmdResponse(String xml, String uri) {
         InvokeCmdResponse response = new InvokeCmdResponse();
         response.setReturnValue(UpdateUtils.getRequestReturnValue(xml));

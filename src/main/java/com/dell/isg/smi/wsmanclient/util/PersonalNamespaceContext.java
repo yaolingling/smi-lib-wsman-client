@@ -11,11 +11,19 @@ import javax.xml.namespace.NamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The Class PersonalNamespaceContext.
+ */
 public class PersonalNamespaceContext implements NamespaceContext {
     private String strNameSpace;
     private static final Logger logger = LoggerFactory.getLogger(PersonalNamespaceContext.class);
 
 
+    /**
+     * Instantiates a new personal namespace context.
+     *
+     * @param strNS the str NS
+     */
     public PersonalNamespaceContext(String strNS) {
         super();
         if (logger.isTraceEnabled()) {
@@ -26,6 +34,9 @@ public class PersonalNamespaceContext implements NamespaceContext {
     }
 
 
+    /* (non-Javadoc)
+     * @see javax.xml.namespace.NamespaceContext#getNamespaceURI(java.lang.String)
+     */
     public String getNamespaceURI(String prefix) {
         if (prefix == null)
             throw new NullPointerException("Null prefix");
@@ -41,23 +52,39 @@ public class PersonalNamespaceContext implements NamespaceContext {
     }
 
 
+    /* (non-Javadoc)
+     * @see javax.xml.namespace.NamespaceContext#getPrefix(java.lang.String)
+     */
     // This method isn't necessary for XPath processing.
     public String getPrefix(String uri) {
         throw new UnsupportedOperationException();
     }
 
 
+    /* (non-Javadoc)
+     * @see javax.xml.namespace.NamespaceContext#getPrefixes(java.lang.String)
+     */
     // This method isn't necessary for XPath processing either.
     public Iterator getPrefixes(String uri) {
         throw new UnsupportedOperationException();
     }
 
 
+    /**
+     * Gets the str name space.
+     *
+     * @return the str name space
+     */
     public String getStrNameSpace() {
         return strNameSpace;
     }
 
 
+    /**
+     * Sets the str name space.
+     *
+     * @param strNameSpace the new str name space
+     */
     public void setStrNameSpace(String strNameSpace) {
         this.strNameSpace = strNameSpace;
     }

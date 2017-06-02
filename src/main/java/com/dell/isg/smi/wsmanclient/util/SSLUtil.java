@@ -17,24 +17,43 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The Class SSLUtil.
+ */
 public class SSLUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(SSLUtil.class);
 
 
+    /**
+     * Gets the trusting SSL socket factory.
+     *
+     * @return the trusting SSL socket factory
+     */
     public static SSLSocketFactory getTrustingSSLSocketFactory() {
         return LazyHolder.SSL_SOCKET_FACTORY;
     }
 
 
+    /**
+     * Gets the trusting hostname verifier.
+     *
+     * @return the trusting hostname verifier
+     */
     public static HostnameVerifier getTrustingHostnameVerifier() {
         return LazyHolder.HOSTNAME_VERIFIER;
     }
 
+    /**
+     * The Class LazyHolder.
+     */
     private static class LazyHolder {
         private static final SSLSocketFactory SSL_SOCKET_FACTORY = createSSLSocketFactory();
         private static final HostnameVerifier HOSTNAME_VERIFIER = new TrustingHostnameVerifier();
     }
 
+    /**
+     * The Class TrustingHostnameVerifier.
+     */
     private static class TrustingHostnameVerifier implements HostnameVerifier {
         @Override
         public boolean verify(String hostname, SSLSession sslSession) {
@@ -44,11 +63,25 @@ public class SSLUtil {
     }
 
 
+    /**
+     * Creates the SSL socket factory.
+     *
+     * @return the SSL socket factory
+     */
     private static SSLSocketFactory createSSLSocketFactory() {
-        return buildSSLContext().getSocketFactory();
+        SSLContext sslContext =  buildSSLContext();
+        if (null != sslContext){
+            return sslContext.getSocketFactory();
+        }
+        return null;
     }
 
 
+    /**
+     * Builds the SSL context.
+     *
+     * @return the SSL context
+     */
     private static SSLContext buildSSLContext() {
         // For now we don't do any certificate checking...
         LOGGER.info("Certificate checking is disabled.");
@@ -63,6 +96,9 @@ public class SSLUtil {
         return null;
     }
 
+    /**
+     * The Class OverlyTrustingTrustManager.
+     */
     // Trust Manager which will NOT do any Cert checking
     private static class OverlyTrustingTrustManager implements X509TrustManager {
         @Override
@@ -70,12 +106,18 @@ public class SSLUtil {
         }
 
 
+        /* (non-Javadoc)
+         * @see javax.net.ssl.X509TrustManager#checkServerTrusted(java.security.cert.X509Certificate[], java.lang.String)
+         */
         @Override
         public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
             LOGGER.info("Skipping SSL Certificate checking for: " + arg1);
         }
 
 
+        /* (non-Javadoc)
+         * @see javax.net.ssl.X509TrustManager#getAcceptedIssuers()
+         */
         @Override
         public X509Certificate[] getAcceptedIssuers() {
             return null;

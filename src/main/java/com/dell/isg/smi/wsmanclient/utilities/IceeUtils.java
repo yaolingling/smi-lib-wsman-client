@@ -20,6 +20,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The Class IceeUtils.
+ */
 public class IceeUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(IceeUtils.class);
@@ -44,9 +47,9 @@ public class IceeUtils {
 
 
     /**
-     * Convert bytes to MegaBytes
-     * 
-     * @param bytes
+     * Convert bytes to MegaBytes.
+     *
+     * @param bytes the bytes
      * @return megabytes
      */
     public static long bytesToMegaBytes(long bytes) {
@@ -55,9 +58,9 @@ public class IceeUtils {
 
 
     /**
-     * Convert megaBytes to GigaBytes
-     * 
-     * @param megaBytes
+     * Convert megaBytes to GigaBytes.
+     *
+     * @param megaBytes the mega bytes
      * @return gigaBytes
      */
     public static double megaBytesToGigaBytes(double megaBytes) {
@@ -67,10 +70,10 @@ public class IceeUtils {
 
 
     /**
-     * Matches input string with pattern string
-     * 
-     * @param inputStr
-     * @param patternStr
+     * Matches input string with pattern string.
+     *
+     * @param inputStr the input str
+     * @param patternStr the pattern str
      * @return bool value
      */
     public static boolean isMatch(String inputStr, String patternStr) {
@@ -83,10 +86,10 @@ public class IceeUtils {
 
 
     /**
-     * Matches input string with pattern string
-     * 
-     * @param strings
-     * @param patternStr
+     * Matches input string with pattern string.
+     *
+     * @param inputStr the input str
+     * @param patternStr the pattern str
      * @return bool value
      */
     public static boolean isMatch(String[] inputStr, String patternStr) {
@@ -105,11 +108,11 @@ public class IceeUtils {
 
 
     /**
-     * Matches search string in a string
-     * 
-     * @param inputStr
-     * @param subStrSearch
-     * @param separator
+     * Matches search string in a string.
+     *
+     * @param inputStr the input str
+     * @param subStrSearch the sub str search
+     * @param separator the separator
      * @return bool value
      */
     public static boolean isSubStrMatch(String inputStr, String subStrSearch, String separator) {
@@ -129,14 +132,17 @@ public class IceeUtils {
 
 
     /**
+     * Validate cifs userinfo.
      *
-     * @param checkme The password to check
+     * @param checkDomain the check domain
+     * @param checkUser the check user
+     * @param checkPassword the check password
      * @return true if the user info supplied is ok; false if it can't be used.
-     *
+     * 
      * From the jcifs javadocs, http://jcifs.samba.org/src/docs/api/, "The userinfo component of the SMB URL (domain;user:pass) must be URL encoded if it contains reserved
      * characters. According to RFC 2396 these characters are non US-ASCII characters and most meta characters however jCIFS will work correctly with anything but '@' which is used
      * to delimit the userinfo component from the server and '%' which is the URL escape character itself."
-     *
+     * 
      * Note: This method will not return False if something is null. It's only checking for the above two illegal characters. If an empty password won't work, check for that
      * elsewhere.
      */
@@ -161,6 +167,12 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Checks if is NFS path.
+     *
+     * @param nfsPath the nfs path
+     * @return true, if is NFS path
+     */
     public static boolean isNFSPath(String nfsPath) {
         if (StringUtils.isNotEmpty(nfsPath) && StringUtils.isNotBlank(nfsPath)) {
             if (nfsPath.endsWith("/")) {
@@ -174,6 +186,12 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Checks if is CIFS path.
+     *
+     * @param cifsPath the cifs path
+     * @return true, if is CIFS path
+     */
     public static boolean isCIFSPath(String cifsPath) {
         if (StringUtils.isNotEmpty(cifsPath) && StringUtils.isNotBlank(cifsPath)) {
             if (cifsPath.endsWith("\\")) {
@@ -187,6 +205,12 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Checks if is NFS file path.
+     *
+     * @param shareFilePath the share file path
+     * @return true, if is NFS file path
+     */
     public static boolean isNFSFilePath(String shareFilePath) {
         if (shareFilePath != null) {
             return NFS_FILE_PATTERN.matcher(shareFilePath).matches();
@@ -196,6 +220,12 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Checks if is CIFS file path.
+     *
+     * @param cifsFilePath the cifs file path
+     * @return true, if is CIFS file path
+     */
     public static boolean isCIFSFilePath(String cifsFilePath) {
         if (StringUtils.isNotEmpty(cifsFilePath) && StringUtils.isNotBlank(cifsFilePath)) {
             if (cifsFilePath.endsWith("\\")) {
@@ -209,6 +239,15 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Checks if is valid path.
+     *
+     * @param path the path
+     * @param domain the domain
+     * @param shareUsername the share username
+     * @param sharePassword the share password
+     * @return true, if is valid path
+     */
     public static boolean isValidPath(String path, String domain, String shareUsername, String sharePassword) {
 
         if (StringUtils.isNotEmpty(path) && StringUtils.isNotBlank(path)) {
@@ -226,6 +265,15 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Checks if is valid file path.
+     *
+     * @param path the path
+     * @param domain the domain
+     * @param shareUsername the share username
+     * @param sharePassword the share password
+     * @return true, if is valid file path
+     */
     public static boolean isValidFilePath(String path, String domain, String shareUsername, String sharePassword) {
 
         if (StringUtils.isNotEmpty(path) && StringUtils.isNotBlank(path)) {
@@ -332,6 +380,12 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Write to file.
+     *
+     * @param pathToFile the path to file
+     * @param stringToWrite the string to write
+     */
     public static void writeToFile(String pathToFile, String stringToWrite) {
 
         logger.debug("Entering method writeToFile() ");
@@ -374,6 +428,12 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Validate encryption password.
+     *
+     * @param password the password
+     * @return true, if successful
+     */
     public static boolean validateEncryptionPassword(String password) {
         boolean isMatching = STRING_PATTERN.matcher(password).matches();
         if (!isMatching || password == null || password.isEmpty()) {
@@ -383,6 +443,13 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Diff.
+     *
+     * @param date1 the date 1
+     * @param date2 the date 2
+     * @return the int
+     */
     public static int diff(Date date1, Date date2) {
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
@@ -401,6 +468,13 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Count diff day.
+     *
+     * @param c1 the c 1
+     * @param c2 the c 2
+     * @return the int
+     */
     public static int countDiffDay(Calendar c1, Calendar c2) {
         int returnInt = 0;
         while (!c1.after(c2)) {
@@ -416,6 +490,12 @@ public class IceeUtils {
     }
 
 
+    /**
+     * Gets the client locale.
+     *
+     * @param locale the locale
+     * @return the client locale
+     */
     public static Locale getClientLocale(String locale) {
         try {
             String[] localeSplit = locale.split("_");
@@ -427,7 +507,7 @@ public class IceeUtils {
 
 
     /**
-     * Validates an ipAddress
+     * Validates an ipAddress.
      *
      * @param ipAddress IP Address
      * @return True or False

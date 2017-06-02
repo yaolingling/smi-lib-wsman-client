@@ -8,22 +8,19 @@ import java.io.IOException;
 /**
  * The {@code IWSManClient} interface is used to send and receive {@link IWSManCommand} commands. An instance can be obtained via one of the {@link WSManClientFactory} getClient
  * methods.
- * <p/>
- * The following code demonstrates sample usage:
- * <p/>
  * 
- * <pre>
+ * The following code demonstrates sample usage:
+ * 
  * IWSManClient client = WSManClientFactory.getClient(ip, user, password);
- * try {
+ *try {
  *     EnumeratePSNumericSensorCmd numericSensorCmd = new EnumeratePSNumericSensorCmd();
- *     List<PSNumericView> numericViews = client.execute(numericSensorCmd);
+ *     List PSNumericView numericViews = client.execute(numericSensorCmd);
  *
  *     EnumerateSystemViewObjectCmd systemViewCmd = new EnumerateSystemViewObjectCmd();
  *     SystemView systemView = client.execute(systemViewCmd);
  * } finally {
  *     client.close();
  * }
- * </pre>
  */
 public interface IWSManClient {
     /**
