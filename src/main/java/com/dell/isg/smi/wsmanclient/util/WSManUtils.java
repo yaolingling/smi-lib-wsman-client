@@ -7,12 +7,15 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlSchema;
@@ -33,11 +36,12 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.dell.isg.smi.commons.utilities.datetime.DateTimeUtils;
 import com.dell.isg.smi.commons.utilities.stream.StreamUtils;
-
 import com.dell.isg.smi.wsmanclient.WSCommandRNDConstant;
 import com.dell.isg.smi.wsmanclient.WSManConstants;
 import com.dell.isg.smi.wsmanclient.WSManException;
@@ -53,7 +57,9 @@ public final class WSManUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WSManUtils.class);
 
-    private static final SimpleDateFormat WSMAN_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss.SSSSSSZ");
+    //private static final SimpleDateFormat WSMAN_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss.SSSSSSZ");
+    private static final Pattern WSMAN_DATE_PATTERN = Pattern.compile("^[0-9]{14}\\.[0-9]{6}\\+[0-9]{3}");
+    private static final String WSMAN_DATE_FORMAT = "yyyyMMddHHmmss";
 
     static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = buildDocumentFactory();
     static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory.newInstance();
@@ -330,28 +336,28 @@ public final class WSManUtils {
     }
 
 
-    /**
-     * Parses the WS man date string.
-     *
-     * @param xml the xml
-     * @return the date
-     */
-    public static Date parseWSManDateString(String xml) {
-        if (xml == null)
-            return null;
-        else
-            try {
-                String ts = DateTimeUtils.normalizeTimeStamp(xml.trim());
-                // Coverity: 10428 STCAL: Static use of type Calendar or DateFormat
-                // As the JavaDoc states, DateFormats are inherently unsafe for
-                // multithreaded use. (From FindBugs description) (CWE-366)
-                Date date = WSMAN_DATE_FORMAT.parse(ts);
-                return (Date) date.clone();
-            } catch (ParseException e) {
-                LOGGER.warn("Invalid WS-Man date string: " + xml);
-                return null;
-            }
-    }
+//    /**
+//     * Parses the WS man date string.
+//     *
+//     * @param xml the xml
+//     * @return the date
+//     */
+//    public static Date parseWSManDateString(String xml) {
+//        if (xml == null)
+//            return null;
+//        else
+//            try {
+//                String ts = DateTimeUtils.normalizeTimeStamp(xml.trim());
+//                // Coverity: 10428 STCAL: Static use of type Calendar or DateFormat
+//                // As the JavaDoc states, DateFormats are inherently unsafe for
+//                // multithreaded use. (From FindBugs description) (CWE-366)
+//                Date date = WSMAN_DATE_FORMAT.parse(ts);
+//                return (Date) date.clone();
+//            } catch (ParseException e) {
+//                LOGGER.warn("Invalid WS-Man date string: " + xml);
+//                return null;
+//            }
+//    }
 
 
     /**
@@ -360,12 +366,12 @@ public final class WSManUtils {
      * @param date the date
      * @return the string
      */
-    public static String printWSManDateString(Date date) {
-        // Coverity: 10429 STCAL: Static use of type Calendar or DateFormat
-        // As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use.
-        // (From FindBugs description) (CWE-366)
-        return WSMAN_DATE_FORMAT.format((Date) date.clone());
-    }
+//    public static String printWSManDateString(Date date) {
+//        // Coverity: 10429 STCAL: Static use of type Calendar or DateFormat
+//        // As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use.
+//        // (From FindBugs description) (CWE-366)
+//        return WSMAN_DATE_FORMAT.format((Date) date.clone());
+//    }
 
 
     /**
@@ -387,4 +393,110 @@ public final class WSManUtils {
         }
         return builder.newDocument();
     }
+    
+    
+    public static Object toObjectMap(Document response)  {
+        Element element = response.getDocumentElement();
+        NodeList nodeList = element.getElementsByTagNameNS(WSCommandRNDConstant.WS_MAN_NAMESPACE, WSCommandRNDConstant.WSMAN_ITEMS_TAG);
+        return processNodeList(nodeList);
+    }
+    
+
+    /**
+     * @param nodeList
+     * @return Object - Either a Map or a List
+     */
+    private static Object processNodeList(NodeList nodeList) {
+        Map<String, Object> nodeMap = new HashMap<String, Object>();
+        List<Object> listNodes = null;
+        Map<String, Object> nm;
+        
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeType() == Element.ELEMENT_NODE) {
+                if (node.hasChildNodes() && node.getChildNodes().item(0).getNodeType() == Element.ELEMENT_NODE) {
+                    Object result = processNodeList(node.getChildNodes());
+                    if(result instanceof Map){
+                        nm = (Map<String, Object>) result;
+                        if(!nm.isEmpty()) {
+                            if(listNodes != null) {
+                                listNodes.add(nm);
+                            } else if(nodeMap.get(node.getLocalName()) != null) {                                
+                                listNodes = new ArrayList<Object>();
+                                listNodes.add(nodeMap.get(node.getLocalName()));
+                                listNodes.add(nm);
+                            } else {
+                                nodeMap.put(node.getLocalName(), nm);
+                            }
+                        }
+                    } else { // if we get here we must have a List
+                        nodeMap.put(node.getLocalName(), result);
+                    }                        
+                } else {
+                    String key = node.getLocalName();
+                    String content = node.getTextContent();
+                    if(isDate(content, WSMAN_DATE_PATTERN)) {
+                        content = getDateString(content, WSMAN_DATE_FORMAT);
+                    }
+                    if (nodeMap.containsKey(key) == false) {
+                        nodeMap.put(key, content);
+                    } else {
+                        Object o = nodeMap.get(key);
+                        if(!(o instanceof List)) {
+                            List<Object> valueList = new LinkedList<>();
+                            valueList.add(o);
+                            valueList.add(content);
+                            nodeMap.put(key, valueList);
+                        } else {
+                            List<Object> list = (List<Object>) nodeMap.get(key);
+                            list.add(content);
+                        }
+                    }
+                }
+            }
+        }
+        if(listNodes != null){
+            return listNodes;
+        }
+        if(nodeMap.size() == 1) {
+            return nodeMap.get(nodeMap.keySet().iterator().next());
+        }
+        return nodeMap;
+    }
+
+
+    /**
+     * Matches input string with pattern string.
+     *
+     * @param inputStr the input str
+     * @param patternStr the pattern str
+     * @return bool value
+     */
+    public static boolean isDate(String str, Pattern pattern) {
+        if (str == null) {
+            return false;
+        }
+        Matcher matcher = pattern.matcher(str);
+        if (matcher.matches()) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * @param dateString
+     * @param dateFormat
+     * @return
+     */
+    private static String getDateString(String dateString, String dateFormat) {
+        try{
+            return DateTimeUtils.getUtcDateFromString(dateFormat, dateString).toString();
+        }
+        catch(Exception e)
+        {
+            return dateString;
+        }
+    }
+
 }
