@@ -3,15 +3,15 @@ package com.dell.isg.smi.wsmanclient.impl;
 import org.w3c.dom.Document;
 
 import com.dell.isg.smi.wsmanclient.WSManBaseEnumerateCommand;
-import com.dell.isg.smi.wsmanclient.WSManConstants.WSManClassEnum;
-import com.dell.isg.smi.wsmanclient.util.WSManUtils;
 import com.dell.isg.smi.wsmanclient.WSManException;
+import com.dell.isg.smi.wsmanclient.util.WSManUtils;
+
 
 public class DefaultEnumerate<T> extends WSManBaseEnumerateCommand<T> {
 
-    private WSManClassEnum command = null;
+    private Enum<?> command = null;
     
-    public DefaultEnumerate(WSManClassEnum command) {
+    public DefaultEnumerate(Enum<?> command) {
         super();
         this.command = command;
     }
@@ -23,7 +23,7 @@ public class DefaultEnumerate<T> extends WSManBaseEnumerateCommand<T> {
     }
 
     @Override
-    public WSManClassEnum getCommandEnum() {
+    public Enum<?> getCommandEnum() {
         return command;
     }
 
