@@ -43,7 +43,6 @@ import org.xml.sax.SAXException;
 import com.dell.isg.smi.commons.utilities.datetime.DateTimeUtils;
 import com.dell.isg.smi.commons.utilities.stream.StreamUtils;
 import com.dell.isg.smi.wsmanclient.WSCommandRNDConstant;
-import com.dell.isg.smi.wsmanclient.WSManConstants;
 import com.dell.isg.smi.wsmanclient.WSManException;
 import com.dell.isg.smi.wsmanclient.WSManRuntimeException;
 
@@ -160,7 +159,7 @@ public final class WSManUtils {
      * @return the object
      * @throws XPathExpressionException the x path expression exception
      */
-    public static Object findObjectInDocument(SOAPBody doc, String xPathLocation, QName qname, WSManConstants.WSManClassEnum commandEnum) throws XPathExpressionException {
+    public static Object findObjectInDocument(SOAPBody doc, String xPathLocation, QName qname, Enum<?> commandEnum) throws XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
         XPath xpath = factory.newXPath();
         xpath.setNamespaceContext(new PersonalNamespaceContext(buildResourceURI(commandEnum)));
@@ -188,14 +187,13 @@ public final class WSManUtils {
      * @param commandEnum the command enum
      * @return the string
      */
-    public static String buildResourceURI(WSManConstants.WSManClassEnum commandEnum) {
+    public static String buildResourceURI(Enum<?> commandEnum) {
         StringBuilder b = new StringBuilder();
         b.append(WSCommandRNDConstant.WSMAN_BASE_URI);
         b.append(WSCommandRNDConstant.WS_OS_SVC_NAMESPACE);
         b.append(commandEnum);
         return b.toString();
     }
-
 
     // buildResourceURI returns a schemas.dmtf.org namespace which the iDrac will accept as
     // input but the response namespaces are in schemas.dell.com. For now we buildDellResourceURI
@@ -211,7 +209,7 @@ public final class WSManUtils {
      *  can be used to get that version but in the future the resource URI should probably come
      */
     // directly from the CommandEnum so that we can support non-Dell resource URIs.
-    static String buildDellResourceURI(WSManConstants.WSManClassEnum commandEnum) {
+    static String buildDellResourceURI(Enum<?> commandEnum) {
         StringBuilder b = new StringBuilder();
         b.append("http://schemas.dell.com/wbem/wscim/1/cim-schema/2/");
         b.append(commandEnum);
@@ -258,7 +256,7 @@ public final class WSManUtils {
             if (type.isAssignableFrom(targetType))
                 return type.cast(o);
             else if (o instanceof JAXBElement) {
-                JAXBElement element = (JAXBElement) o;
+                JAXBElement<?> element = (JAXBElement<?>) o;
                 Object value = element.getValue();
                 targetType = value.getClass();
                 if (type.isAssignableFrom(targetType))
@@ -287,7 +285,7 @@ public final class WSManUtils {
             if (type.isAssignableFrom(targetType))
                 return type.cast(o);
             else if (o instanceof JAXBElement) {
-                JAXBElement element = (JAXBElement) o;
+                JAXBElement<?> element = (JAXBElement<?>) o;
                 Object value = element.getValue();
                 targetType = value.getClass();
                 if (type.isAssignableFrom(targetType))
@@ -334,44 +332,6 @@ public final class WSManUtils {
         }
         return nsURI;
     }
-
-
-//    /**
-//     * Parses the WS man date string.
-//     *
-//     * @param xml the xml
-//     * @return the date
-//     */
-//    public static Date parseWSManDateString(String xml) {
-//        if (xml == null)
-//            return null;
-//        else
-//            try {
-//                String ts = DateTimeUtils.normalizeTimeStamp(xml.trim());
-//                // Coverity: 10428 STCAL: Static use of type Calendar or DateFormat
-//                // As the JavaDoc states, DateFormats are inherently unsafe for
-//                // multithreaded use. (From FindBugs description) (CWE-366)
-//                Date date = WSMAN_DATE_FORMAT.parse(ts);
-//                return (Date) date.clone();
-//            } catch (ParseException e) {
-//                LOGGER.warn("Invalid WS-Man date string: " + xml);
-//                return null;
-//            }
-//    }
-
-
-    /**
-     * Prints the WS man date string.
-     *
-     * @param date the date
-     * @return the string
-     */
-//    public static String printWSManDateString(Date date) {
-//        // Coverity: 10429 STCAL: Static use of type Calendar or DateFormat
-//        // As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use.
-//        // (From FindBugs description) (CWE-366)
-//        return WSMAN_DATE_FORMAT.format((Date) date.clone());
-//    }
 
 
     /**
