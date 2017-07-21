@@ -7,12 +7,15 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlSchema;
@@ -33,13 +36,13 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.dell.isg.smi.commons.utilities.datetime.DateTimeUtils;
 import com.dell.isg.smi.commons.utilities.stream.StreamUtils;
-
 import com.dell.isg.smi.wsmanclient.WSCommandRNDConstant;
-import com.dell.isg.smi.wsmanclient.WSManConstants;
 import com.dell.isg.smi.wsmanclient.WSManException;
 import com.dell.isg.smi.wsmanclient.WSManRuntimeException;
 
@@ -53,7 +56,9 @@ public final class WSManUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WSManUtils.class);
 
-    private static final SimpleDateFormat WSMAN_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss.SSSSSSZ");
+    //private static final SimpleDateFormat WSMAN_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss.SSSSSSZ");
+    private static final Pattern WSMAN_DATE_PATTERN = Pattern.compile("^[0-9]{14}\\.[0-9]{6}\\+[0-9]{3}");
+    private static final String WSMAN_DATE_FORMAT = "yyyyMMddHHmmss";
 
     static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = buildDocumentFactory();
     static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory.newInstance();
@@ -154,7 +159,7 @@ public final class WSManUtils {
      * @return the object
      * @throws XPathExpressionException the x path expression exception
      */
-    public static Object findObjectInDocument(SOAPBody doc, String xPathLocation, QName qname, WSManConstants.WSManClassEnum commandEnum) throws XPathExpressionException {
+    public static Object findObjectInDocument(SOAPBody doc, String xPathLocation, QName qname, Enum<?> commandEnum) throws XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
         XPath xpath = factory.newXPath();
         xpath.setNamespaceContext(new PersonalNamespaceContext(buildResourceURI(commandEnum)));
@@ -182,14 +187,13 @@ public final class WSManUtils {
      * @param commandEnum the command enum
      * @return the string
      */
-    public static String buildResourceURI(WSManConstants.WSManClassEnum commandEnum) {
+    public static String buildResourceURI(Enum<?> commandEnum) {
         StringBuilder b = new StringBuilder();
         b.append(WSCommandRNDConstant.WSMAN_BASE_URI);
         b.append(WSCommandRNDConstant.WS_OS_SVC_NAMESPACE);
         b.append(commandEnum);
         return b.toString();
     }
-
 
     // buildResourceURI returns a schemas.dmtf.org namespace which the iDrac will accept as
     // input but the response namespaces are in schemas.dell.com. For now we buildDellResourceURI
@@ -205,7 +209,7 @@ public final class WSManUtils {
      *  can be used to get that version but in the future the resource URI should probably come
      */
     // directly from the CommandEnum so that we can support non-Dell resource URIs.
-    static String buildDellResourceURI(WSManConstants.WSManClassEnum commandEnum) {
+    static String buildDellResourceURI(Enum<?> commandEnum) {
         StringBuilder b = new StringBuilder();
         b.append("http://schemas.dell.com/wbem/wscim/1/cim-schema/2/");
         b.append(commandEnum);
@@ -252,7 +256,7 @@ public final class WSManUtils {
             if (type.isAssignableFrom(targetType))
                 return type.cast(o);
             else if (o instanceof JAXBElement) {
-                JAXBElement element = (JAXBElement) o;
+                JAXBElement<?> element = (JAXBElement<?>) o;
                 Object value = element.getValue();
                 targetType = value.getClass();
                 if (type.isAssignableFrom(targetType))
@@ -281,7 +285,7 @@ public final class WSManUtils {
             if (type.isAssignableFrom(targetType))
                 return type.cast(o);
             else if (o instanceof JAXBElement) {
-                JAXBElement element = (JAXBElement) o;
+                JAXBElement<?> element = (JAXBElement<?>) o;
                 Object value = element.getValue();
                 targetType = value.getClass();
                 if (type.isAssignableFrom(targetType))
@@ -331,44 +335,6 @@ public final class WSManUtils {
 
 
     /**
-     * Parses the WS man date string.
-     *
-     * @param xml the xml
-     * @return the date
-     */
-    public static Date parseWSManDateString(String xml) {
-        if (xml == null)
-            return null;
-        else
-            try {
-                String ts = DateTimeUtils.normalizeTimeStamp(xml.trim());
-                // Coverity: 10428 STCAL: Static use of type Calendar or DateFormat
-                // As the JavaDoc states, DateFormats are inherently unsafe for
-                // multithreaded use. (From FindBugs description) (CWE-366)
-                Date date = WSMAN_DATE_FORMAT.parse(ts);
-                return (Date) date.clone();
-            } catch (ParseException e) {
-                LOGGER.warn("Invalid WS-Man date string: " + xml);
-                return null;
-            }
-    }
-
-
-    /**
-     * Prints the WS man date string.
-     *
-     * @param date the date
-     * @return the string
-     */
-    public static String printWSManDateString(Date date) {
-        // Coverity: 10429 STCAL: Static use of type Calendar or DateFormat
-        // As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use.
-        // (From FindBugs description) (CWE-366)
-        return WSMAN_DATE_FORMAT.format((Date) date.clone());
-    }
-
-
-    /**
      * New document.
      *
      * @return the document
@@ -387,4 +353,110 @@ public final class WSManUtils {
         }
         return builder.newDocument();
     }
+    
+    
+    public static Object toObjectMap(Document response)  {
+        Element element = response.getDocumentElement();
+        NodeList nodeList = element.getElementsByTagNameNS(WSCommandRNDConstant.WS_MAN_NAMESPACE, WSCommandRNDConstant.WSMAN_ITEMS_TAG);
+        return processNodeList(nodeList);
+    }
+    
+
+    /**
+     * @param nodeList
+     * @return Object - Either a Map or a List
+     */
+    private static Object processNodeList(NodeList nodeList) {
+        Map<String, Object> nodeMap = new HashMap<String, Object>();
+        List<Object> listNodes = null;
+        Map<String, Object> nm;
+        
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeType() == Element.ELEMENT_NODE) {
+                if (node.hasChildNodes() && node.getChildNodes().item(0).getNodeType() == Element.ELEMENT_NODE) {
+                    Object result = processNodeList(node.getChildNodes());
+                    if(result instanceof Map){
+                        nm = (Map<String, Object>) result;
+                        if(!nm.isEmpty()) {
+                            if(listNodes != null) {
+                                listNodes.add(nm);
+                            } else if(nodeMap.get(node.getLocalName()) != null) {                                
+                                listNodes = new ArrayList<Object>();
+                                listNodes.add(nodeMap.get(node.getLocalName()));
+                                listNodes.add(nm);
+                            } else {
+                                nodeMap.put(node.getLocalName(), nm);
+                            }
+                        }
+                    } else { // if we get here we must have a List
+                        nodeMap.put(node.getLocalName(), result);
+                    }                        
+                } else {
+                    String key = node.getLocalName();
+                    String content = node.getTextContent();
+                    if(isDate(content, WSMAN_DATE_PATTERN)) {
+                        content = getDateString(content, WSMAN_DATE_FORMAT);
+                    }
+                    if (nodeMap.containsKey(key) == false) {
+                        nodeMap.put(key, content);
+                    } else {
+                        Object o = nodeMap.get(key);
+                        if(!(o instanceof List)) {
+                            List<Object> valueList = new LinkedList<>();
+                            valueList.add(o);
+                            valueList.add(content);
+                            nodeMap.put(key, valueList);
+                        } else {
+                            List<Object> list = (List<Object>) nodeMap.get(key);
+                            list.add(content);
+                        }
+                    }
+                }
+            }
+        }
+        if(listNodes != null){
+            return listNodes;
+        }
+        if(nodeMap.size() == 1) {
+            return nodeMap.get(nodeMap.keySet().iterator().next());
+        }
+        return nodeMap;
+    }
+
+
+    /**
+     * Matches input string with pattern string.
+     *
+     * @param inputStr the input str
+     * @param patternStr the pattern str
+     * @return bool value
+     */
+    public static boolean isDate(String str, Pattern pattern) {
+        if (str == null) {
+            return false;
+        }
+        Matcher matcher = pattern.matcher(str);
+        if (matcher.matches()) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * @param dateString
+     * @param dateFormat
+     * @return
+     */
+    private static String getDateString(String dateString, String dateFormat) {
+        try{
+            return DateTimeUtils.getUtcDateFromString(dateFormat, dateString).toString();
+        }
+        catch(Exception e)
+        {
+            return dateString;
+        }
+    }
+
 }

@@ -52,7 +52,7 @@ public abstract class WSManBaseEnumerateCommand<T> implements IWSManCommand<T> {
     }
 
 
-    public abstract WSManConstants.WSManClassEnum getCommandEnum();
+    public abstract Enum<?> getCommandEnum();
 
 
     /* (non-Javadoc)
