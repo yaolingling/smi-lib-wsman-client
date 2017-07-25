@@ -7,6 +7,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * The Class WSManPasswordCredential.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "WSManPasswordCredential")
 public class WSManPasswordCredential extends PasswordCredential {
@@ -28,16 +31,31 @@ public class WSManPasswordCredential extends PasswordCredential {
     private boolean caCheck = false;
 
 
+    /**
+     * Checks if is cn check.
+     *
+     * @return true, if is cn check
+     */
     public boolean isCnCheck() {
         return cnCheck;
     }
 
 
+    /**
+     * Sets the cn check.
+     *
+     * @param cnCheck the new cn check
+     */
     public void setCnCheck(boolean cnCheck) {
         this.cnCheck = cnCheck;
     }
 
 
+    /**
+     * Checks if is ca check.
+     *
+     * @return true, if is ca check
+     */
     public boolean isCaCheck() {
         return caCheck;
     }
@@ -48,8 +66,8 @@ public class WSManPasswordCredential extends PasswordCredential {
     }
 
 
-    /**
-     * @see ICredential.validate()
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.PasswordCredential#validate()
      */
     @Override
     public ValidationResult validate() {

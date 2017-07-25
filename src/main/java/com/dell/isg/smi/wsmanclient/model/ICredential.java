@@ -3,26 +3,29 @@
  */
 package com.dell.isg.smi.wsmanclient.model;
 
+/**
+ * The Interface ICredential.
+ */
 public interface ICredential {
 
     /**
-     * Gets the ID
+     * Gets the ID.
      *
-     * @Return long - id
+     * @return the id
      */
     long getId();
 
 
     /**
-     * Sets the Id
+     * Sets the Id.
      *
-     * @param value - the Id
+     * @param id the new id
      */
     void setId(long id);
 
 
     /**
-     * Gets the label
+     * Gets the label.
      *
      * @return String - the label
      */
@@ -30,7 +33,7 @@ public interface ICredential {
 
 
     /**
-     * Sets the label
+     * Sets the label.
      *
      * @param value - the label
      */
@@ -38,7 +41,7 @@ public interface ICredential {
 
 
     /**
-     * Validate method
+     * Validate method.
      *
      * @return ValidationResult - the validation result object
      */

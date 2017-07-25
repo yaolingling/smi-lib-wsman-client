@@ -10,6 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * The Class PasswordCredential.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PasswordCredential", propOrder = { "id", "label", "username", "password", "domain" })
 @XmlRootElement
@@ -49,8 +52,8 @@ public class PasswordCredential implements IPasswordCredential {
     String domain;
 
 
-    /**
-     * @see ICredential.getId()
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.ICredential#getId()
      */
     @Override
     public long getId() {
@@ -58,8 +61,8 @@ public class PasswordCredential implements IPasswordCredential {
     }
 
 
-    /**
-     * @see ICredential.setId(long)
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.ICredential#setId(long)
      */
     @Override
     public void setId(long value) {
@@ -67,8 +70,8 @@ public class PasswordCredential implements IPasswordCredential {
     }
 
 
-    /**
-     * @see ICredential.getLabel()
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.ICredential#getLabel()
      */
     @Override
     public String getLabel() {
@@ -76,8 +79,8 @@ public class PasswordCredential implements IPasswordCredential {
     }
 
 
-    /**
-     * @see ICredential.setLabel(String)
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.ICredential#setLabel(java.lang.String)
      */
     @Override
     public void setLabel(String value) {
@@ -85,8 +88,8 @@ public class PasswordCredential implements IPasswordCredential {
     }
 
 
-    /**
-     * @see IPasswordCredential.getUsername()
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.IPasswordCredential#getUsername()
      */
     @Override
     public String getUsername() {
@@ -94,8 +97,8 @@ public class PasswordCredential implements IPasswordCredential {
     }
 
 
-    /**
-     * @see IPasswordCredential.setUsername(String)
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.IPasswordCredential#setUsername(java.lang.String)
      */
     @Override
     public void setUsername(String value) {
@@ -103,8 +106,8 @@ public class PasswordCredential implements IPasswordCredential {
     }
 
 
-    /**
-     * @see IPasswordCredential.getPassword()
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.IPasswordCredential#getPassword()
      */
     @Override
     public String getPassword() {
@@ -112,8 +115,8 @@ public class PasswordCredential implements IPasswordCredential {
     }
 
 
-    /**
-     * @see IPasswordCredential.setPassword(String)
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.IPasswordCredential#setPassword(java.lang.String)
      */
     @Override
     public void setPassword(String value) {
@@ -121,8 +124,8 @@ public class PasswordCredential implements IPasswordCredential {
     }
 
 
-    /**
-     * @see IPasswordCredential.getDomain()
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.IPasswordCredential#getDomain()
      */
     @Override
     public String getDomain() {
@@ -130,8 +133,8 @@ public class PasswordCredential implements IPasswordCredential {
     }
 
 
-    /**
-     * @see IPasswordCredential.setDomain(String)
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.IPasswordCredential#setDomain(java.lang.String)
      */
     @Override
     public void setDomain(String value) {
@@ -139,8 +142,8 @@ public class PasswordCredential implements IPasswordCredential {
     }
 
 
-    /**
-     * @see ICredential.validate()
+    /* (non-Javadoc)
+     * @see com.dell.isg.smi.wsmanclient.model.ICredential#validate()
      */
     @Override
     public ValidationResult validate() {
@@ -156,9 +159,9 @@ public class PasswordCredential implements IPasswordCredential {
 
 
     /**
-     * Gets the username and domain in the format of username@domain
+     * Gets the username at domain.
      *
-     * @return String - the username@domain. If no domain present, just the username
+     * @return the username at domain
      */
     public String getUsernameAtDomain() {
         String usr = getUsername();
