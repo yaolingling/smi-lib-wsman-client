@@ -11,7 +11,6 @@ import org.w3._2003._05.soap_envelope.Body;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.dell.isg.smi.wsmanclient.WSManConstants.WSManInvokableEnum;
 import com.dell.isg.smi.wsmanclient.WSManConstants.WSManMethodParamEnum;
 import com.dell.isg.smi.wsmanclient.util.WSManUtils;
 
@@ -25,7 +24,7 @@ import com.dell.isg.smi.wsmanclient.util.WSManUtils;
  * @param <T> The type of POJO that {@code parse} returns.
  */
 public abstract class WSManBaseInvokeCommand<T> implements IWSManCommand<T> {
-    protected final WSManInvokableEnum cmd;
+    protected final IWSManInvokableEnum cmd;
     protected final String actionName;
 
 
@@ -35,7 +34,7 @@ public abstract class WSManBaseInvokeCommand<T> implements IWSManCommand<T> {
      * @param cmd The WSManInvokableEnum used to address the resource class.
      * @param actionName The invoke method name.
      */
-    public WSManBaseInvokeCommand(WSManInvokableEnum cmd, String actionName) {
+    public WSManBaseInvokeCommand(IWSManInvokableEnum cmd, String actionName) {
         this.cmd = cmd;
         this.actionName = actionName;
     }
@@ -43,7 +42,7 @@ public abstract class WSManBaseInvokeCommand<T> implements IWSManCommand<T> {
 
     @Override
     public String getResourceURI() {
-        return WSManUtils.buildResourceURI(cmd.getCommandEnum());
+        return WSManUtils.buildResourceURI((Enum) cmd.getCommandEnum());
     }
 
 

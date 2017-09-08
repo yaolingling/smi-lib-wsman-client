@@ -3,10 +3,13 @@
  */
 package com.dell.isg.smi.wsmanclient.model;
 
+/**
+ * The Interface IPasswordCredential.
+ */
 public interface IPasswordCredential extends ICredential {
 
     /**
-     * Gets the username
+     * Gets the username.
      *
      * @return String - the username
      */
@@ -14,15 +17,15 @@ public interface IPasswordCredential extends ICredential {
 
 
     /**
-     * Sets the username
+     * Sets the username.
      *
-     * @param value - the username
+     * @param username the new username
      */
     public void setUsername(String username);
 
 
     /**
-     * Gets the password
+     * Gets the password.
      *
      * @return String - the password
      */
@@ -30,15 +33,15 @@ public interface IPasswordCredential extends ICredential {
 
 
     /**
-     * Sets the password
+     * Sets the password.
      *
-     * @param value - the password
+     * @param password the new password
      */
     public void setPassword(String password);
 
 
     /**
-     * Gets the Domain
+     * Gets the Domain.
      *
      * @return String - the domain
      */
@@ -46,9 +49,9 @@ public interface IPasswordCredential extends ICredential {
 
 
     /**
-     * Sets the domain
+     * Sets the domain.
      *
-     * @param value - the value
+     * @param domain the new domain
      */
     public void setDomain(String domain);
 }

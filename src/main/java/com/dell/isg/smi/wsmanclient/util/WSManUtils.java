@@ -363,7 +363,9 @@ public final class WSManUtils {
     
 
     /**
-     * @param nodeList
+     * Process node list.
+     *
+     * @param nodeList the node list
      * @return Object - Either a Map or a List
      */
     private static Object processNodeList(NodeList nodeList) {
@@ -428,8 +430,8 @@ public final class WSManUtils {
     /**
      * Matches input string with pattern string.
      *
-     * @param inputStr the input str
-     * @param patternStr the pattern str
+     * @param str the str
+     * @param pattern the pattern
      * @return bool value
      */
     public static boolean isDate(String str, Pattern pattern) {
@@ -445,9 +447,11 @@ public final class WSManUtils {
 
 
     /**
-     * @param dateString
-     * @param dateFormat
-     * @return
+     * Gets the date string.
+     *
+     * @param dateString the date string
+     * @param dateFormat the date format
+     * @return the date string
      */
     private static String getDateString(String dateString, String dateFormat) {
         try{
