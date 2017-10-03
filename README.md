@@ -4,6 +4,7 @@ A common lib for Dell Server management via out of band management controller.  
 
 The smi-lib-wsman has factory classes that establish a connection over the https protocol to the target compute node exposing standard SOAP based webservices for management and monitoring.  
 
+Copyright © 2017 Dell Inc. or its subsidiaries.  All Rights Reserved. 
  
 ### How to Install 
 
@@ -65,6 +66,13 @@ Once Jar is downloaded or built from source code, the lib is ready for use e.g.
 
    This build script will download the dependencies from central maven and start building liberary  
    
+### Licensing
+
+Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+RackHD is a Trademark of Dell EMC
 
 ### Support
 
