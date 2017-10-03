@@ -11,6 +11,7 @@ public final class WSManConstants {
     public static final String WSMAN_GET_URI = "http://schemas.xmlsoap.org/ws/2004/09/transfer/Get";
     public static final String WSMAN_PUT_URI = "http://schemas.xmlsoap.org/ws/2004/09/transfer/Put";
 
+
     public enum WSManEnumerationMode {
         EnumerateObject, EnumerateEPR, EnumerateObjectAndEPR;
     }
