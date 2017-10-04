@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotAuthorizedException;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -285,27 +287,41 @@ public class DefaultWSManClient implements IWSManClient {
                 wsmanlogger.debug("WSMAN - RESPONSE - " + responseStr);
             }
             return responseStr;
+        } catch (IOException ioe) {
+            int rc = this.checkResponse(connection);
+            if (rc == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                logger.error(ioe.getMessage());
+                throw new NotAuthorizedException(ioe);
+            }
+            if (rc == HttpURLConnection.HTTP_BAD_REQUEST) {
+                logger.error(ioe.getMessage());
+                throw new BadRequestException(ioe);
+            }
+            throw ioe;
         } finally {
-            if (out != null)
+            if (out != null) {
                 try {
                     out.close();
                 } catch (IOException e) {
                     logger.warn("Failed to close " + destination + " output", e);
                 }
+            }
 
-            if (in != null)
+            if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
                     logger.warn("Failed to close " + destination + " input", e);
                 }
+            }
 
-            if (in1 != null)
+            if (in1 != null) {
                 try {
                     in1.close();
                 } catch (IOException e) {
                     logger.warn("Failed to close " + destination + " input", e);
                 }
+            }
         }
     }
 
@@ -338,4 +354,43 @@ public class DefaultWSManClient implements IWSManClient {
     public String getPassword() {
         return password;
     }
+    
+    private int checkResponse(URLConnection c) throws IOException {
+        int respCode = 0;
+        if ( c instanceof HttpURLConnection || c instanceof HttpsURLConnection) {
+        	HttpURLConnection connection = HttpURLConnection.class.cast(c);
+	        try {
+	            respCode = connection.getResponseCode();
+	        } catch (Exception e) {
+	            logger.error(e.getMessage());
+	            return HttpURLConnection.HTTP_INTERNAL_ERROR;
+	        }
+	        switch (respCode) {
+	        case HttpURLConnection.HTTP_OK:
+	            logger.debug("HTTP response: OK");
+	            break;
+	        case HttpURLConnection.HTTP_BAD_REQUEST:
+	            logger.info("HTTP response: Bad Request");
+	            break;
+	        case HttpURLConnection.HTTP_UNAUTHORIZED:
+	            logger.info("HTTP response: Unauthorized");
+	            break;
+	        case HttpURLConnection.HTTP_BAD_METHOD:
+	            logger.info("HTTP response: Method Not Allowed");
+	            break;
+	        case HttpURLConnection.HTTP_CLIENT_TIMEOUT:
+	            logger.info("HTTP response: Request Time-out");
+	            break;
+	        case HttpURLConnection.HTTP_UNAVAILABLE:
+	            logger.info("HTTP response: Service Unavailable");
+	            break;
+	        default:
+	            logger.info("HTTP response: Unknown Reason");
+	            break;
+	        }
+        }
+        return respCode;
+
+    }
+
 }
